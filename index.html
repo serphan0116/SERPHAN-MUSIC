@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080808">
+<title>SERPHAN MUSIC</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#080808;color:white;
+ font-family:Arial,sans-serif;padding-bottom:110px
+}
+header{
+ padding:25px 20px;background:#111;
+ border-bottom:1px solid #333;
+}
+.logo{font-size:27px;font-weight:900;color:#d6ad55}
+.logo span{color:white}
+header p{color:#999;font-size:12px;letter-spacing:3px}
+.hero{
+ margin:20px;padding:25px;border-radius:18px;
+ background:linear-gradient(135deg,#30220b,#111,#252525);
+ border:1px solid #8e7136;
+}
+.hero small{color:#d6ad55;letter-spacing:3px}
+.hero h1{font-size:32px;margin:15px 0 5px}
+.hero p{color:#bbb;font-size:14px}
+h2{font-size:19px;margin:25px 20px 15px}
+.song{
+ margin:10px 15px;padding:12px;
+ background:#151515;border-radius:12px;
+ display:flex;align-items:center;gap:13px;
+ border:1px solid #292929;
+}
+.cover{
+ width:55px;height:55px;flex-shrink:0;
+ background:linear-gradient(135deg,#bd963d,#241a08);
+ border-radius:9px;display:grid;
+ place-items:center;font-size:23px;
+}
+.info{flex:1;min-width:0}
+.info b{font-size:14px}
+.info p{color:#999;font-size:12px;margin:6px 0 0}
+.play{
+ background:#d6ad55;color:#111;border:0;
+ width:39px;height:39px;border-radius:50%;
+ font-size:17px;cursor:pointer
+}
+.player{
+ position:fixed;bottom:0;left:0;width:100%;
+ background:#171717;border-top:1px solid #8e7136;
+ padding:12px 17px 20px;z-index:5;
+}
+.now{display:flex;align-items:center;gap:12px}
+.now .info{flex:1}
+.controls{text-align:center;margin-top:10px}
+.controls button{
+ background:none;border:0;color:white;
+ font-size:25px;margin:0 17px;cursor:pointer
+}
+#progress{width:100%;accent-color:#d6ad55}
+footer{text-align:center;color:#777;font-size:11px;margin:30px}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">SERPHAN <span>MUSIC</span></div>
+ <p>YOUR MUSIC. YOUR WORLD.</p>
+</header>
+
+<section class="hero">
+ <small>OFFICIAL MUSIC PLATFORM</small>
+ <h1>Welcome to<br>SERPHAN MUSIC</h1>
+ <p>Enjoy the original music of SERPHAN.</p>
+</section>
+
+<h2>🎵 Nyimbo Zangu</h2>
+<div id="songs"></div>
+
+<footer>© 2026 SERPHAN MUSIC. All Rights Reserved.</footer>
+
+<div class="player">
+ <div class="now">
+  <div class="cover">🎵</div>
+  <div class="info">
+   <b id="current">Chagua wimbo</b>
+   <p>SERPHAN</p>
+  </div>
+  <span style="color:#d6ad55">♪</span>
+ </div>
+ <input type="range" id="progress" value="0" min="0" max="100">
+ <div class="controls">
+  <button onclick="previous()">⏮</button>
+  <button onclick="togglePlay()" id="mainPlay">▶</button>
+  <button onclick="next()">⏭</button>
+ </div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+const songs=[
+ {name:"Wimbo wa Kwanza",file:"music/song1.mp3"},
+ {name:"Wimbo wa Pili",file:"music/song2.mp3"},
+ {name:"Wimbo wa Tatu",file:"music/song3.mp3"},
+ {name:"Wimbo wa Nne",file:"music/song4.mp3"},
+ {name:"Wimbo wa Tano",file:"music/song5.mp3"}
+];
+
+let currentIndex=0;
+const audio=document.getElementById("audio");
+
+const list=document.getElementById("songs");
+
+songs.forEach((song,i)=>{
+ list.innerHTML+=`
+ <div class="song">
+  <div class="cover">🎧</div>
+  <div class="info">
+   <b>${song.name}</b>
+   <p>SERPHAN • Original Music</p>
+  </div>
+  <button class="play" onclick="playSong(${i})">▶</button>
+ </div>`;
+});
+
+function playSong(i){
+ currentIndex=i;
+ audio.src=songs[i].file;
+ document.getElementById("current").textContent=songs[i].name;
+ audio.play().then(()=>{
+ document.getElementById("mainPlay").textContent="⏸";
+ }).catch(()=>{
+ alert("Wimbo haujapatikana. Hakikisha umeupload MP3 kwenye folder la music.");
+ });
+}
+
+function togglePlay(){
+ if(!audio.src){playSong(0);return;}
+ if(audio.paused){
+ audio.play();
+ document.getElementById("mainPlay").textContent="⏸";
+ }else{
+ audio.pause();
+ document.getElementById("mainPlay").textContent="▶";
+ }
+}
+
+function next(){
+ playSong((currentIndex+1)%songs.length);
+}
+
+function previous(){
+ playSong((currentIndex-1+songs.length)%songs.length);
+}
+
+audio.addEventListener("ended",next);
+
+audio.addEventListener("timeupdate",()=>{
+ if(audio.duration){
+ document.getElementById("progress").value=
+ (audio.currentTime/audio.duration)*100;
+ }
+});
+
+document.getElementById("progress").addEventListener("input",e=>{
+ if(audio.duration){
+ audio.currentTime=(e.target.value/100)*audio.duration;
+ }
+});
+</script>
+</body>
+</html>
